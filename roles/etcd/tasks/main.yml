@@ -1,0 +1,9 @@
+---
+- file: path=/etc/systemd/system/etcd2.service.d state=directory
+
+- template: src=etcd.service.j2 dest=/etc/systemd/system/etcd2.service.d/99-config.conf
+  notify:
+    - systemctl daemon-reload
+    - restart etcd2
+
+- service: name=etcd2 state=started enabled=yes

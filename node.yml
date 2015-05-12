@@ -1,0 +1,8 @@
+---
+- hosts: node
+
+  roles:
+    - node
+
+  vars:
+    fleet_role: node

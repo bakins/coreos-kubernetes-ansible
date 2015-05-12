@@ -1,0 +1,18 @@
+---
+- file: path=/etc/kubernetes/manifests state=directory
+
+- name: generate kubelet unit
+  template: src=kubelet.service.j2 dest=/etc/systemd/system/kubelet.service
+  notify:
+    - systemctl daemon-reload
+    - restart kubelet
+
+- service: name=kubelet.service state=started enabled=yes
+
+- name: generate proxy unit
+  template: src=proxy.service.j2 dest=/etc/systemd/system/proxy.service
+  notify:
+    - systemctl daemon-reload
+    - restart proxy
+
+- service: name=proxy.service state=started enabled=yes

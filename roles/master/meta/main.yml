@@ -1,0 +1,6 @@
+---
+  dependencies:
+    - { role: fleet }
+    - { role: kubernetes }
+    - { role: systemd }
+    - { role: etcd }

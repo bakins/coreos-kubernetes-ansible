@@ -1,0 +1,16 @@
+[Unit]
+Description=Kubernetes apiserver
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10s
+ExecStart=/opt/bin/hyperkube apiserver \
+    --etcd-servers=http://127.0.0.1:2379 \
+    --insecure-bind-address=0.0.0.0 \
+    --portal-net={{ kubernetes_portal_network }} \
+    --insecure-port={{ kubernetes_apiserver_insecure_port }} \
+    --allow-privileged=false \
+    --logtostderr=true
+

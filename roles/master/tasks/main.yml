@@ -1,0 +1,32 @@
+---
+- name: generate apiserver unit
+  template: src=apiserver.service.j2 dest=/etc/systemd/system/apiserver.service
+  notify:
+    - systemctl daemon-reload
+    - restart apiserver
+
+- service: name=apiserver.service state=started
+
+- name: generate controller-manager unit
+  template: src=controller-manager.service.j2 dest=/etc/systemd/system/controller-manager.service
+  notify:
+    - systemctl daemon-reload
+    - restart controller-manager
+
+- service: name=controller-manager.service state=started
+
+- name: generate scheduler unit
+  template: src=scheduler.service.j2 dest=/etc/systemd/system/scheduler.service
+  notify:
+    - systemctl daemon-reload
+    - restart scheduler
+
+- service: name=scheduler.service state=started
+
+- name: generate kube-register unit
+  template: src=kube-register.service.j2 dest=/etc/systemd/system/kube-register.service
+  notify:
+    - systemctl daemon-reload
+    - restart kube-register
+
+- service: name=kube-register.service state=started

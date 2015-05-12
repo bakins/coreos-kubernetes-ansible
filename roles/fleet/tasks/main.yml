@@ -1,0 +1,8 @@
+---
+- file: path=/etc/fleet state=directory
+
+- template: src=fleet.conf.j2 dest=/etc/fleet/fleet.conf
+  notify:
+    - restart fleet
+
+- service: name=fleet state=started

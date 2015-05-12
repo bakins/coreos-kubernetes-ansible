@@ -1,0 +1,3 @@
+---
+- name: restart fleet
+  service: name=fleet.service state=restarted

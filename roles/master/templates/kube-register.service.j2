@@ -1,0 +1,13 @@
+[Unit]
+Description=Kubernetes Registration Service
+Documentation=https://github.com/kelseyhightower/kube-register
+
+[Service]
+ExecStartPre=curl -L -z /opt/bin/kube-register -o /opt/bin/kube-register https://github.com/kelseyhightower/kube-register/releases/download/v0.0.4/kube-register-0.0.4-linux-amd64
+ExecStartPre=/usr/bin/chmod +x /opt/bin/kube-register
+ExecStart=/opt/bin/kube-register-0.0.4-linux-amd64 \
+  --metadata=role=node \
+  --fleet-endpoint=unix:///var/run/fleet.sock \
+  --api-endpoint=http://{{kubernetes_master}}:{{kubernetes_apiserver_insecure_port}}
+Restart=always
+RestartSec=30s

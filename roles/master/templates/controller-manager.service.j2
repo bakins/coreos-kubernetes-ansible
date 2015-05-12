@@ -1,0 +1,14 @@
+[Unit]
+Description=Kubernetes controller-manager
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10s
+ExecStart=/opt/bin/hyperkube controller-manager \
+  --master=http://127.0.0.1:{{kubernetes_apiserver_insecure_port}} \
+  --logtostderr=true \
+  --cloud-provider=vagrant
+
+
