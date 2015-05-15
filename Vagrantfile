@@ -40,12 +40,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :master do |m|
     m.vm.hostname = "master"
-    config.vm.network :private_network, ip: $config[:master_ip]
+    m.vm.network :private_network, ip: $config[:master_ip]
+    config.vm.network "forwarded_port", guest: 8080, host: 8080
 
-    config.vm.provision :file, :source => "user-data.yml", :destination => "/tmp/vagrantfile-user-data"
-    config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+    m.vm.provision :file, :source => "user-data.yml", :destination => "/tmp/vagrantfile-user-data"
+    m.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
 
-    config.vm.provision "ansible" do |ansible|
+    m.vm.provision "ansible" do |ansible|
       ansible.playbook = "master.yml"
       ansible.groups = ansible_groups
     end
@@ -55,12 +56,15 @@ Vagrant.configure("2") do |config|
     config.vm.define "node-#{i}" do |n|
       ansible_groups['node'] << "node-#{i}"
       n.vm.hostname = "node-#{i}"
-      config.vm.network :private_network, ip: "172.16.16.%d" % (100 + i)
+      n.vm.network :private_network, ip: "172.16.16.%d" % (100 + i)
 
-      config.vm.provision :file, :source => "user-data.yml", :destination => "/tmp/vagrantfile-user-data"
-      config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      n.vm.provision :file, :source => "user-data.yml", :destination => "/tmp/vagrantfile-user-data"
+      n.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
 
-      config.vm.provision "ansible" do |ansible|
+      # HACK: need to make sure cloud-init runs for pypy
+      n.vm.provision :shell, :inline => "until [ -f /home/core/.bootstrapped ]; do sleep 5; done"
+
+      n.vm.provision "ansible" do |ansible|
         ansible.playbook = "node.yml"
         ansible.groups = ansible_groups
       end

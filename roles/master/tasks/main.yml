@@ -5,7 +5,7 @@
     - systemctl daemon-reload
     - restart apiserver
 
-- service: name=apiserver.service state=started
+- service: name=apiserver.service state=started enabled=yes
 
 - name: generate controller-manager unit
   template: src=controller-manager.service.j2 dest=/etc/systemd/system/controller-manager.service
@@ -13,7 +13,7 @@
     - systemctl daemon-reload
     - restart controller-manager
 
-- service: name=controller-manager.service state=started
+- service: name=controller-manager.service state=started enabled=yes
 
 - name: generate scheduler unit
   template: src=scheduler.service.j2 dest=/etc/systemd/system/scheduler.service
@@ -21,7 +21,13 @@
     - systemctl daemon-reload
     - restart scheduler
 
-- service: name=scheduler.service state=started
+- service: name=scheduler.service state=started enabled=yes
+
+- get_url: url=https://github.com/kelseyhightower/kube-register/releases/download/v0.0.4/kube-register-0.0.4-linux-amd64 sha256sum=e5be32812d9a27d68760f254315d177d7d8331d6b25d35382efa047e730a18f5 dest=/opt/bin/kube-register-0.0.4
+
+- file: path=/opt/bin/kube-register-0.0.4 mode=0755 state=file
+
+- file: src=/opt/bin/kube-register-0.0.4 dest=/opt/bin/kube-register state=link
 
 - name: generate kube-register unit
   template: src=kube-register.service.j2 dest=/etc/systemd/system/kube-register.service
@@ -29,4 +35,4 @@
     - systemctl daemon-reload
     - restart kube-register
 
-- service: name=kube-register.service state=started
+- service: name=kube-register.service state=started enabled=yes
